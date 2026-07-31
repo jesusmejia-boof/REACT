@@ -8,36 +8,31 @@ export default function CharacterPage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const [character, setCharacter] = useState(null)
-}
-
-
-  const obtenerEpisodios = async () => {
-    const responde = await Promise.all(episode.map(episode => fetch(episode)))
-    const data = await Promise.all(responde.map(res => res.json()))
-    console.log(data)
-    return data
-
-  }
-
-const formatearFecha = (fecha) => {
-  const fechaSliced = fecha.split("T")[0]
-  return fechaSliced.toLocaleDateString("es-CO", { month: "short", year: "numeric", day: "numeric" })
+  const [episodes, setEpisodes] = useState([])
 
   useEffect(() => {
     const getCharacter = async () => {
-      const response = await fetch(`${BASE_URL}/character/${id}`)
-      const data = await response.json()
-      setCharacter(data)
+      try {
+        const response = await fetch(`${BASE_URL}/character/${id}`)
+        const data = await response.json()
+        setCharacter(data)
 
-      const episodios = await obtenerEpisodios(data.episode)
-      setCharacter({ ...data, episode:episodios })
+        if (data.episode) {
+          const episodePromises = data.episode.map(episodeUrl => fetch(episodeUrl).then(res => res.json()));
+          const episodeData = await Promise.all(episodePromises);
+          setEpisodes(episodeData);
+        }
+
+      } catch (error) {
+        console.error("Error fetching character data:", error)
+      }
     }
     getCharacter()
   }, [id])
 
   if (!character) return <p className={styles.loading}>Cargando...</p>
 
-  const { name, image, status, species, gender, created, episode, origin, location, type } = character
+  const { name, image, status, species, gender, created, origin, location, type } = character
 
   const statusClass = {
     Alive: styles.alive,
@@ -48,10 +43,9 @@ const formatearFecha = (fecha) => {
   const statusLabel = { Alive: "Vivo", Dead: "Muerto", unknown: "Desconocido" }[status] ?? status
 
   return (
-
     <div className={styles.page}>
       <button className={styles.backBtn} onClick={() => navigate(-1)}>
-        ← Volver
+        &#x2190; Volver
       </button>
 
       <div className={styles.hero}>
@@ -60,7 +54,7 @@ const formatearFecha = (fecha) => {
           <h1 className={styles.name}>{name}</h1>
           <span className={`${styles.badge} ${statusClass}`}>
             <span className={styles.dot} />
-            {statusLabel} · {species}
+            {statusLabel} &middot; {species}
           </span>
         </div>
       </div>
@@ -97,21 +91,17 @@ const formatearFecha = (fecha) => {
 
         <div className={styles.episodes}>
           <span className={styles.epLabel}>Aparece en episodios</span>
-          <span className={styles.epCount}>{episode.length}</span>
+          <span className={styles.epCount}>{episodes.length}</span>
         </div>
       </div>
 
       <h3>Episodios en donde sale</h3>
       <select>
-
         {
-
-          episode.map(episodio =>
-            <option>{episodio.name}</option>
+          episodes.map(episodio =>
+            <option key={episodio.id}>{episodio.name}</option>
           )
         }
-
-
       </select>
     </div>
   )
