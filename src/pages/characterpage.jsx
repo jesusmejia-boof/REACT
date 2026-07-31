@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router"
 import { BASE_URL } from "../../Utils/constants"
 import styles from "./characterpage.module.css"
+import { BsJournalPlus } from "react-icons/bs"
 
 export default function CharacterPage() {
   const { id } = useParams()
@@ -30,6 +31,7 @@ export default function CharacterPage() {
   const statusLabel = { Alive: "Vivo", Dead: "Muerto", unknown: "Desconocido" }[status] ?? status
 
   return (
+
     <div className={styles.page}>
       <button className={styles.backBtn} onClick={() => navigate(-1)}>
         ← Volver
@@ -81,11 +83,20 @@ export default function CharacterPage() {
           <span className={styles.epCount}>{episode.length}</span>
         </div>
       </div>
+
+      return (
+        <h1>Nombre: {Nombre}</h1>
+      
+      )
+        const Nombre {juan}
     </div>
   )
-
   const obtenerEpisodios = async () => {
     const responde = await Promise.all(episode.map(episode => fetch(episode)))
+    const data = await Promise.all(responde.map(res => res.json()))
+    console.log(data)
+    return data
 
   }
+
 }
