@@ -8,42 +8,25 @@ import { GiDeadEye } from "react-icons/gi";
 
 export default function App() {
 
-  const [characters, setCharacters] = useState([]);
-  const [page, setPage] = useState(1);
-  const [busqueda, setBusqueda] = useState("");
-  const [gender, setGender] = useState("");
-
-
-  const genders = [
-    "Femenino",
-    "Masculino",
-    "Sin genero",
-    "Desconocido",
-  ]
-
-  const gendersEnum = {
-    "Femenino": "female",
-    "Masculino": "male",
-    "Sin genero": "genderless",
-    "Desconocido": "unknown",
-  }
-
+  const [characters, setCharacters] = useState([])
+  const [page, setPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [loading, setLoading] = useState(false)
+  const [busqueda, setBusqueda] = useState("")
 
   const fetchApi = async (endpoint) => {
-    const params = new URLSearchParams();
+    setLoading(true)
+    const params = new URLSearchParams()
 
     if (page != 1) {
-      params.append('page', page);
-    }
-    if (busqueda != "") {
-      params.append("name", busqueda);
+      params.append("page", page)
     }
 
-    if (gender != '') {
-      params.append("gender", gender)
+       if (busqueda != '') {
+      params.append("name", busqueda)
     }
 
-    const response = await fetch(`${BASE_URL}/character?${params.toString()}`)
+    const response = await fetch(`${BASE_URL}/${endpoint}?${params}`)
     const data = await response.json()
     setCharacters(data.results)
     // setLoading(false)
@@ -51,51 +34,21 @@ export default function App() {
 
   useEffect(() => {
     buscarPersonaje()
-  }, [page, gender])
+  }, [])
 
-  const buscarPersonaje = () => {
+ const buscarPersonaje = () => {
     fetchApi("character").then(data => {
-      setCharacters(data.results)
-
+      setCharacters(data.results || [])
     })
   }
-
-const statusesEnum = {
-  Alive: "Vivo",
-  Dead: "Muerto",
-  unknown: "Desconocido",
-}
-
-const statuses = [
-  "Vivo",
-  "Muerto",
-  "Desconocido",
-]
-
-
-const statusClass = {
-  Alive: styles.alive,
-  Dead: styles.dead,
-  unknown: styles.unknown,
-}
-
   return (
-    <div>
-      <input onChange={(e) => setBusqueda(e.target.value)} type="text" placeholder="Buscar personaje" />
-      <button onClick={buscarPersonaje}>Buscar</button>
-      <div>
-        {
-          genders.map(
-            (genero) => (
-              <button onClick={() => setGender(gendersEnum[genero])}>
-                {genero}
-              </button>
-            )
-          )
-        }
-      </div>
-      <div className={styles.wrapper}>
-        <h1 className={styles.titulo}>PERSONAJES DE RICK AND MORTY</h1>
+    <div className={styles.wrapper}>
+
+      <input onChange={(e) => setBusqueda(e.target.value)} type="text" placeholder="Buscar personaje..." className={styles.search} />
+
+      <button className={styles.searchBtn} onClick={buscarPersonaje}>Buscar</button>
+
+      <h1 className={styles.titulo}>PERSONAJES DE RICK AND MORTY</h1>
 
 
         <div className={styles.container}>

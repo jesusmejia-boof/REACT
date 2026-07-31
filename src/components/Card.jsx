@@ -26,15 +26,8 @@ export default function Card({ personaje }) {
             <div className={styles.carta}>
 
                 <img src={image} alt=''/>
-                <h1>Hombre:{name}</h1>
-                <p>Estado:{status}</p>
-                <p>Especie:{specie}</p>
-                <p>Creado: {created}</p>
-                <p>Episodios: {episode}</p>
-                <p>Género: {gender}</p>
-                <p>Ubicación: {location.name}</p>
-                <p>Origen: {origin.name}</p>
-                <p>Tipo: {type}</p>
+                <h1>{name}</h1>
+              
 
 
                 <div className={styles.boton} onClick={meGustaActor}>
